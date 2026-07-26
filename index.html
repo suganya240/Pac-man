@@ -1,50 +1,1142 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Pac-Man Animation</title>
+
+
   <style>
-    #PacMan {
-      position: absolute;
-      left: 0;
-      top: 100px;
+
+    /* ---------- RESET ---------- */
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
+
+
+    /* ---------- BODY ---------- */
+
+    body {
+
+      min-height: 100vh;
+
+      font-family: Arial, sans-serif;
+
+      display: flex;
+
+      justify-content: center;
+
+      align-items: center;
+
+      padding: 20px;
+
+      color: white;
+
+      background:
+        radial-gradient(
+          circle at top left,
+          #301934,
+          transparent 35%
+        ),
+
+        radial-gradient(
+          circle at bottom right,
+          #001f3f,
+          transparent 40%
+        ),
+
+        linear-gradient(
+          135deg,
+          #050014,
+          #000b25
+        );
+
+    }
+
+
+    /* ---------- MAIN CONTAINER ---------- */
+
+    .game-container {
+
+      width: 100%;
+
+      max-width: 1000px;
+
+      padding: 30px;
+
+      background:
+        rgba(255, 255, 255, 0.08);
+
+      border:
+        1px solid
+        rgba(255, 255, 255, 0.2);
+
+      border-radius: 25px;
+
+      backdrop-filter: blur(15px);
+
+      box-shadow:
+        0 20px 60px
+        rgba(0, 0, 0, 0.6);
+
+    }
+
+
+    /* ---------- TITLE ---------- */
+
+    h1 {
+
+      text-align: center;
+
+      font-size: 40px;
+
+      margin-bottom: 8px;
+
+      background:
+        linear-gradient(
+          90deg,
+          #ffe600,
+          #ff8c00,
+          #ff00cc,
+          #00f5ff
+        );
+
+      -webkit-background-clip: text;
+
+      -webkit-text-fill-color: transparent;
+
+    }
+
+
+    .subtitle {
+
+      text-align: center;
+
+      color: #ccc;
+
+      margin-bottom: 25px;
+
+    }
+
+
+    /* ---------- SCORE ---------- */
+
+    .score-board {
+
+      display: flex;
+
+      justify-content: center;
+
+      gap: 20px;
+
+      flex-wrap: wrap;
+
+      margin-bottom: 25px;
+
+    }
+
+
+    .score-box {
+
+      min-width: 150px;
+
+      padding: 12px 25px;
+
+      text-align: center;
+
+      border-radius: 15px;
+
+      background:
+        rgba(255, 255, 255, 0.1);
+
+      border:
+        1px solid
+        rgba(255, 255, 255, 0.15);
+
+    }
+
+
+    .score-box span {
+
+      display: block;
+
+      margin-top: 5px;
+
+      font-size: 24px;
+
+      font-weight: bold;
+
+      color: #ffe600;
+
+    }
+
+
+    /* ---------- GAME AREA ---------- */
+
+    #gameArea {
+
+      position: relative;
+
+      width: 100%;
+
+      height: 300px;
+
+      overflow: hidden;
+
+      border-radius: 20px;
+
+      border:
+        3px solid
+        #0072ff;
+
+      background:
+
+        radial-gradient(
+          circle,
+          rgba(0, 114, 255, 0.15),
+          transparent 50%
+        ),
+
+        #020617;
+
+      box-shadow:
+
+        inset 0 0 30px
+        rgba(0, 114, 255, 0.3),
+
+        0 0 30px
+        rgba(0, 114, 255, 0.3);
+
+    }
+
+
+    /* ---------- MAZE LINES ---------- */
+
+    .maze-line {
+
+      position: absolute;
+
+      height: 3px;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          #0072ff,
+          #00f5ff,
+          #0072ff,
+          transparent
+        );
+
+      opacity: 0.6;
+
+    }
+
+
+    .line1 {
+
+      width: 80%;
+
+      top: 40px;
+
+      left: 10%;
+
+    }
+
+
+    .line2 {
+
+      width: 70%;
+
+      bottom: 40px;
+
+      left: 15%;
+
+    }
+
+
+    /* ---------- DOTS ---------- */
+
+    .dots {
+
+      position: absolute;
+
+      left: 0;
+
+      right: 0;
+
+      top: 145px;
+
+      display: flex;
+
+      justify-content: space-around;
+
+      padding: 0 40px;
+
+    }
+
+
+    .dot {
+
+      width: 8px;
+
+      height: 8px;
+
+      border-radius: 50%;
+
+      background: #ffe600;
+
+      box-shadow:
+        0 0 10px #ffe600;
+
+    }
+
+
+    /* ---------- PACMAN ---------- */
+
+    #PacMan {
+
+      position: absolute;
+
+      left: 0;
+
+      top: 105px;
+
+      width: 80px;
+
+      height: 80px;
+
+      object-fit: contain;
+
+      z-index: 5;
+
+      filter:
+        drop-shadow(
+          0 0 12px #ffe600
+        );
+
+      transition:
+        transform 0.2s;
+
+    }
+
+
+    /* ---------- GHOST ---------- */
+
+    .ghost {
+
+      position: absolute;
+
+      width: 60px;
+
+      height: 60px;
+
+      border-radius:
+        50% 50% 0 0;
+
+      z-index: 4;
+
+      animation:
+        ghostFloat 1s
+        infinite alternate;
+
+    }
+
+
+    .ghost::after {
+
+      content: "";
+
+      position: absolute;
+
+      bottom: -10px;
+
+      left: 0;
+
+      width: 100%;
+
+      height: 20px;
+
+      background: inherit;
+
+      clip-path:
+        polygon(
+          0 0,
+          20% 100%,
+          40% 0,
+          60% 100%,
+          80% 0,
+          100% 100%,
+          100% 0
+        );
+
+    }
+
+
+    .ghost1 {
+
+      top: 115px;
+
+      right: 200px;
+
+      background: #ff1744;
+
+      box-shadow:
+        0 0 20px #ff1744;
+
+    }
+
+
+    .ghost2 {
+
+      top: 115px;
+
+      right: 100px;
+
+      background: #00e5ff;
+
+      box-shadow:
+        0 0 20px #00e5ff;
+
+      animation-delay:
+        0.3s;
+
+    }
+
+
+    .ghost-eyes {
+
+      position: absolute;
+
+      top: 15px;
+
+      left: 12px;
+
+      width: 10px;
+
+      height: 14px;
+
+      border-radius: 50%;
+
+      background: white;
+
+      box-shadow:
+        25px 0 white;
+
+    }
+
+
+    @keyframes ghostFloat {
+
+      from {
+
+        transform:
+          translateY(0);
+
+      }
+
+      to {
+
+        transform:
+          translateY(-10px);
+
+      }
+
+    }
+
+
+    /* ---------- CONTROLS ---------- */
+
+    .controls {
+
+      display: flex;
+
+      justify-content: center;
+
+      gap: 12px;
+
+      flex-wrap: wrap;
+
+      margin-top: 25px;
+
+    }
+
+
+    button {
+
+      padding:
+        12px 22px;
+
+      border: none;
+
+      border-radius: 25px;
+
+      color: white;
+
+      font-size: 15px;
+
+      font-weight: bold;
+
+      cursor: pointer;
+
+      transition: 0.3s;
+
+    }
+
+
+    button:hover {
+
+      transform:
+        translateY(-3px)
+        scale(1.05);
+
+      box-shadow:
+        0 8px 20px
+        rgba(0, 0, 0, 0.4);
+
+    }
+
+
+    .start-btn {
+
+      background:
+        linear-gradient(
+          135deg,
+          #00c853,
+          #64dd17
+        );
+
+    }
+
+
+    .pause-btn {
+
+      background:
+        linear-gradient(
+          135deg,
+          #ff9100,
+          #ff3d00
+        );
+
+    }
+
+
+    .reset-btn {
+
+      background:
+        linear-gradient(
+          135deg,
+          #ff1744,
+          #d50000
+        );
+
+    }
+
+
+    /* ---------- SPEED ---------- */
+
+    .speed-control {
+
+      text-align: center;
+
+      margin-top: 25px;
+
+      color: #ddd;
+
+    }
+
+
+    #speed {
+
+      width: 250px;
+
+      margin-top: 10px;
+
+      cursor: pointer;
+
+    }
+
+
+    #speedValue {
+
+      color: #00f5ff;
+
+      font-weight: bold;
+
+    }
+
+
+    /* ---------- STATUS ---------- */
+
+    #status {
+
+      text-align: center;
+
+      margin-top: 15px;
+
+      color: #00f5ff;
+
+      font-weight: bold;
+
+    }
+
+
+    /* ---------- MOBILE ---------- */
+
+    @media (max-width: 600px) {
+
+      .game-container {
+
+        padding: 20px 15px;
+
+      }
+
+
+      h1 {
+
+        font-size: 30px;
+
+      }
+
+
+      #gameArea {
+
+        height: 250px;
+
+      }
+
+
+      #PacMan {
+
+        width: 60px;
+
+        height: 60px;
+
+        top: 95px;
+
+      }
+
+
+      .ghost {
+
+        width: 45px;
+
+        height: 45px;
+
+      }
+
+
+      .ghost1 {
+
+        right: 120px;
+
+      }
+
+
+      .ghost2 {
+
+        right: 50px;
+
+      }
+
+    }
+
   </style>
+
 </head>
+
+
 <body>
-  <img id="PacMan" src="./images/PacMan1.png" width="100">
+
+
+  <div class="game-container">
+
+
+    <h1>🟡 Pac-Man Adventure</h1>
+
+
+    <p class="subtitle">
+      Watch Pac-Man move through the neon maze!
+    </p>
+
+
+    <!-- SCORE -->
+
+    <div class="score-board">
+
+      <div class="score-box">
+
+        Score
+
+        <span id="score">
+          0
+        </span>
+
+      </div>
+
+
+      <div class="score-box">
+
+        Status
+
+        <span id="gameStatus">
+          Ready
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- GAME AREA -->
+
+    <div id="gameArea">
+
+
+      <!-- Maze Lines -->
+
+      <div class="maze-line line1"></div>
+
+      <div class="maze-line line2"></div>
+
+
+      <!-- Dots -->
+
+      <div class="dots">
+
+        <span class="dot"></span>
+
+        <span class="dot"></span>
+
+        <span class="dot"></span>
+
+        <span class="dot"></span>
+
+        <span class="dot"></span>
+
+        <span class="dot"></span>
+
+        <span class="dot"></span>
+
+        <span class="dot"></span>
+
+        <span class="dot"></span>
+
+        <span class="dot"></span>
+
+        <span class="dot"></span>
+
+        <span class="dot"></span>
+
+      </div>
+
+
+      <!-- PacMan -->
+
+      <img
+        id="PacMan"
+        src="./images/PacMan1.png"
+        alt="PacMan"
+      >
+
+
+      <!-- Ghost 1 -->
+
+      <div class="ghost ghost1">
+
+        <div class="ghost-eyes"></div>
+
+      </div>
+
+
+      <!-- Ghost 2 -->
+
+      <div class="ghost ghost2">
+
+        <div class="ghost-eyes"></div>
+
+      </div>
+
+
+    </div>
+
+
+    <!-- CONTROLS -->
+
+    <div class="controls">
+
+      <button
+        class="start-btn"
+        onclick="startGame()"
+      >
+        ▶ Start
+      </button>
+
+
+      <button
+        class="pause-btn"
+        onclick="pauseGame()"
+      >
+        ⏸ Pause
+      </button>
+
+
+      <button
+        class="reset-btn"
+        onclick="resetGame()"
+      >
+        🔄 Reset
+      </button>
+
+    </div>
+
+
+    <!-- SPEED -->
+
+    <div class="speed-control">
+
+      ⚡ Speed:
+
+      <span id="speedValue">
+        200 ms
+      </span>
+
+      <br>
+
+      <input
+        type="range"
+        id="speed"
+        min="50"
+        max="500"
+        value="200"
+        step="50"
+        oninput="changeSpeed()"
+      >
+
+    </div>
+
+
+    <div id="status">
+
+      Press Start to begin the game 🚀
+
+    </div>
+
+
+  </div>
+
 
   <script>
-    var pos = 0;
-    let pageWidth = window.innerWidth;
+
+
+    /* ---------- VARIABLES ---------- */
+
+    let pos = 0;
+
+    let direction = 0;
+
+    let focus = 0;
+
+    let interval = null;
+
+    let speed = 200;
+
+    let score = 0;
+
+
     const pacArray = [
-      ["./images/PacMan1.png","./images/PacMan2.png"],
-      ["./images/PacMan3.png","./images/PacMan4.png"],
+
+      [
+        "./images/PacMan1.png",
+        "./images/PacMan2.png"
+      ],
+
+      [
+        "./images/PacMan3.png",
+        "./images/PacMan4.png"
+      ]
+
     ];
-    var direction = 0;
-    var focus = 0;
+
+
+    /* ---------- START GAME ---------- */
+
+    function startGame() {
+
+      if (interval) {
+
+        return;
+
+      }
+
+
+      document.getElementById(
+        "gameStatus"
+      ).textContent =
+        "Playing";
+
+
+      document.getElementById(
+        "status"
+      ).textContent =
+        "Pac-Man is moving! 🟡";
+
+
+      interval =
+        setInterval(
+          Run,
+          speed
+        );
+
+    }
+
+
+    /* ---------- PAUSE ---------- */
+
+    function pauseGame() {
+
+      clearInterval(
+        interval
+      );
+
+      interval = null;
+
+
+      document.getElementById(
+        "gameStatus"
+      ).textContent =
+        "Paused";
+
+
+      document.getElementById(
+        "status"
+      ).textContent =
+        "Game Paused ⏸";
+
+    }
+
+
+    /* ---------- RESET ---------- */
+
+    function resetGame() {
+
+      clearInterval(
+        interval
+      );
+
+      interval = null;
+
+      pos = 0;
+
+      direction = 0;
+
+      focus = 0;
+
+      score = 0;
+
+
+      const img =
+        document.getElementById(
+          "PacMan"
+        );
+
+
+      img.style.left =
+        "0px";
+
+
+      img.src =
+        pacArray[0][0];
+
+
+      document.getElementById(
+        "score"
+      ).textContent =
+        "0";
+
+
+      document.getElementById(
+        "gameStatus"
+      ).textContent =
+        "Ready";
+
+
+      document.getElementById(
+        "status"
+      ).textContent =
+        "Press Start to begin the game 🚀";
+
+    }
+
+
+    /* ---------- RUN ---------- */
 
     function Run() {
-      let img = document.getElementById("PacMan");
-      let imgWidth = img.width;
 
-      focus = (focus + 1) % 2;
-      direction = checkPageBounds(direction, imgWidth, pos, pageWidth);
-      img.src = pacArray[direction][focus];
-     
+      const img =
+        document.getElementById(
+          "PacMan"
+        );
+
+
+      const gameArea =
+        document.getElementById(
+          "gameArea"
+        );
+
+
+      const imgWidth =
+        img.offsetWidth;
+
+
+      const pageWidth =
+        gameArea.clientWidth;
+
+
+      /* Animation */
+
+      focus =
+        (focus + 1) % 2;
+
+
+      direction =
+        checkPageBounds(
+          direction,
+          imgWidth,
+          pos,
+          pageWidth
+        );
+
+
+      img.src =
+        pacArray[
+          direction
+        ][
+          focus
+        ];
+
+
+      /* Movement */
+
       if (direction) {
+
         pos -= 20;
-      } else {
-        pos += 20;
+
+        img.style.transform =
+          "scaleX(-1)";
+
       }
-      img.style.left = pos + "px";
+
+      else {
+
+        pos += 20;
+
+        img.style.transform =
+          "scaleX(1)";
+
+      }
+
+
+      img.style.left =
+        pos + "px";
+
+
+      /* Score */
+
+      score += 10;
+
+
+      document.getElementById(
+        "score"
+      ).textContent =
+        score;
+
     }
 
-    setInterval(Run, 200);
 
-    function checkPageBounds(direction, imgWidth, pos, pageWidth) {
-      if (pos + imgWidth > pageWidth) direction = 1;
-      if (pos < 0) direction = 0;
+    /* ---------- BOUNDARY ---------- */
+
+    function checkPageBounds(
+
+      direction,
+      imgWidth,
+      pos,
+      pageWidth
+
+    ) {
+
+
+      if (
+        pos + imgWidth >=
+        pageWidth
+      ) {
+
+        direction = 1;
+
+      }
+
+
+      if (
+        pos <= 0
+      ) {
+
+        direction = 0;
+
+      }
+
+
       return direction;
+
     }
+
+
+    /* ---------- SPEED ---------- */
+
+    function changeSpeed() {
+
+      speed =
+        document.getElementById(
+          "speed"
+        ).value;
+
+
+      document.getElementById(
+        "speedValue"
+      ).textContent =
+        speed + " ms";
+
+
+      if (interval) {
+
+        clearInterval(
+          interval
+        );
+
+
+        interval =
+          setInterval(
+            Run,
+            speed
+          );
+
+      }
+
+    }
+
+
   </script>
+
+
 </body>
+
 </html>
